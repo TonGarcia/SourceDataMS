@@ -1,0 +1,42 @@
+version: "2"
+
+services:
+  discovery:
+    image: "gaesi/discovery"
+    hostname: discovery
+    ports:
+      - "8761:8761"
+
+  config:
+    image: "gaesi/config"
+    hostname: config
+    restart: always
+    links:
+      - discovery
+    environment:
+      REPOSITORY_HOST: https://github.com/TonGarcia/config-datasets
+      EUREKA_HOST: discovery
+      EUREKA_PORT: 8761
+    ports:
+      - "8888:8888"
+
+  gateway:
+    image: "gaesi/gateway"
+    hostname: gateway
+    restart: always
+    links:
+      - discovery
+      - config
+    environment:
+      EUREKA_HOST: discovery
+      EUREKA_PORT: 8761
+    ports:
+      - "8080:8080"
+
+  app:
+    build: .
+    links:
+      - discovery
+    ports:
+      - "3000:3000"
+      - "9090:9090"
