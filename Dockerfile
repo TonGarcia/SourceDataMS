@@ -1,6 +1,17 @@
-FROM xetys/rails-java
-ADD . .
+FROM ruby:2.6
+RUN apt-get update -qq && apt-get install -y nodejs
+RUN mkdir /myapp
+WORKDIR /myapp
+COPY Gemfile /myapp/Gemfile
+COPY Gemfile.lock /myapp/Gemfile.lock
 RUN bundle install
-# generic = data-source-name (like: IBGE, ANVISA...)
-CMD rails s -b 0.0.0.0 -d && sh -c 'java -jar bin/ms-source-generic-1.0.jar --side-app-name=cloud-rails --eureka-url=http://discovery:8761/eureka/'
+COPY . /myapp
+
+# Add a script to be executed every time the container starts.
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 3000
+
+# Start the main process.
+CMD ["rails", "server", "-b", "0.0.0.0"]

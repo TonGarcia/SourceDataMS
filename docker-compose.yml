@@ -14,7 +14,7 @@ services:
     links:
       - discovery
     environment:
-      REPOSITORY_HOST: https://github.com/TonGarcia/config-datasets
+      REPOSITORY_HOST: https://github.com/TonGarcia/config-datasets.git
       EUREKA_HOST: discovery
       EUREKA_PORT: 8761
     ports:
@@ -33,7 +33,7 @@ services:
     ports:
       - "8080:8080"
 
-  app:
+  anvisa:
     build: .
     links:
       - discovery
